@@ -19,7 +19,7 @@ const mimeTypes = {
   ".ico": "image/x-icon",
 };
 
-const webhookPath = "/api/webhooks/interoperability";
+const webhookPath = "/api/webhooks/interop";
 const lastWebhookPath = "/api/webhooks/last";
 const healthWebhookPath = "/api/webhooks/health";
 const configPath = "/api/config";
