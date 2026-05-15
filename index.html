@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Webhook Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Webhook receiver</p>
+          <h1>Recibe y revisa la ultima insercion del proyecto.</h1>
+          <p class="lede">Configura la URL y la autenticacion. Lo importante queda al frente.</p>
+        </div>
+      </section>
+
+      <section class="dashboard">
+        <section class="panel panel-focus" aria-labelledby="received-title">
+          <div class="panel-header">
+            <div>
+              <h2 id="received-title">Datos recibidos del proyecto</h2>
+              <p>Actualizacion automatica cada 3 segundos.</p>
+            </div>
+            <span class="live-pill">Activo</span>
+          </div>
+
+          <div class="stats-grid">
+            <article class="stat-card">
+              <span class="stat-label">Estado HTTP</span>
+              <strong class="stat-value" id="receivedStatus">-</strong>
+            </article>
+            <article class="stat-card">
+              <span class="stat-label">Fecha y hora</span>
+              <strong class="stat-value stat-copy" id="receivedDate">Sin registros</strong>
+            </article>
+            <article class="stat-card">
+              <span class="stat-label">Mensaje</span>
+              <strong class="stat-value stat-copy" id="receivedMessage">Esperando datos</strong>
+            </article>
+          </div>
+
+          <div class="field field-tight">
+            <label for="receivedPayload">Datos recibidos</label>
+            <pre class="code-block payload-block" id="receivedPayload">Aun no se ha recibido ninguna insercion.</pre>
+          </div>
+        </section>
+
+        <aside class="sidebar">
+          <section class="panel panel-compact" aria-labelledby="webhook-title">
+            <div class="panel-header">
+              <div>
+                <h2 id="webhook-title">URL webhook para copiar al otro proyecto</h2>
+                <p>Esta URL pertenece a esta app y recibe los datos enviados.</p>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="webhookUrl">URL webhook</label>
+              <input id="webhookUrl" type="url" autocomplete="off" />
+              <p class="error-message" id="webhookUrlError"></p>
+            </div>
+
+            <div class="button-row">
+              <button class="primary-button" id="saveWebhookUrl" type="button">Guardar URL</button>
+              <button class="secondary-button" id="copyWebhookUrl" type="button">Copiar URL</button>
+            </div>
+          </section>
+
+          <section class="panel panel-compact" aria-labelledby="external-title">
+            <div class="panel-header">
+              <div>
+                <h2 id="external-title">URL del proyecto externo para verificar conexion</h2>
+                <p>Esta URL solo se usa para comprobar si el otro sistema responde.</p>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="externalProjectUrl">URL del proyecto externo</label>
+              <input id="externalProjectUrl" type="url" autocomplete="off" />
+              <p class="error-message" id="externalProjectUrlError"></p>
+            </div>
+
+            <div class="button-row">
+              <button class="primary-button" id="saveExternalUrl" type="button">Guardar URL externa</button>
+              <button class="secondary-button" id="verifyConnection" type="button">Verificar conexion</button>
+            </div>
+
+            <div class="connection-card">
+              <div class="connection-head">
+                <strong>Verificacion</strong>
+                <span class="connection-pill neutral" id="connectionIndicator">Sin verificar</span>
+              </div>
+              <div class="connection-meta">
+                <span id="connectionMessage">Aun no se ha comprobado la disponibilidad del sitio.</span>
+                <span id="connectionHttp">HTTP: -</span>
+                <span id="connectionTime">Tiempo: -</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel panel-compact" aria-labelledby="security-title">
+            <div class="panel-header">
+              <div>
+                <h2 id="security-title">Autenticacion</h2>
+                <p>Elige bearer o hmac y copia la credencial.</p>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="authType">Tipo</label>
+              <select id="authType">
+                <option value="bearer">bearer</option>
+                <option value="hmac">hmac</option>
+              </select>
+            </div>
+
+            <div class="auth-card" id="bearerFields">
+              <div class="field">
+                <label for="authToken">Token Bearer</label>
+                <div class="input-action">
+                  <input id="authToken" type="password" autocomplete="off" />
+                  <button class="secondary-button" id="toggleToken" type="button">Ver</button>
+                </div>
+                <p class="error-message" id="authTokenError"></p>
+              </div>
+              <div class="button-row">
+                <button class="primary-button" id="generateToken" type="button">Regenerar token</button>
+                <button class="secondary-button" id="copyToken" type="button">Copiar token</button>
+              </div>
+            </div>
+
+            <div class="auth-card hidden" id="hmacFields">
+              <div class="field">
+                <label for="hmacSecret">Secreto HMAC</label>
+                <div class="input-action">
+                  <input id="hmacSecret" type="password" autocomplete="off" />
+                  <button class="secondary-button" id="toggleSecret" type="button">Ver</button>
+                </div>
+                <p class="error-message" id="hmacSecretError"></p>
+              </div>
+              <div class="button-row">
+                <button class="primary-button" id="generateSecret" type="button">Regenerar secreto</button>
+                <button class="secondary-button" id="copySecret" type="button">Copiar secreto</button>
+              </div>
+            </div>
+          </section>
+
+          <p class="status-banner" id="saveStatus" role="status"></p>
+        </aside>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
