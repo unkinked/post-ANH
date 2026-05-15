@@ -1,4 +1,4 @@
-const webhookPath = "/api/webhooks/interoperability";
+const webhookPath = "/api/webhooks/interop";
 const configEndpoint = "/api/config";
 const lastWebhookEndpoint = "/api/webhooks/last";
 const connectionCheckEndpoint = "/api/connection-check";
