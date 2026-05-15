@@ -13,44 +13,142 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
     <main class="page-shell">
       <section class="hero">
         <div class="hero-copy">
           <p class="eyebrow">Webhook receiver</p>
-          <h1>Recibe y revisa la ultima insercion del proyecto.</h1>
-          <p class="lede">Configura la URL y la autenticacion. Lo importante queda al frente.</p>
+          <h1>Recibe eventos, detecta fallos y depura la autenticación desde un solo panel.</h1>
+          <p class="lede">La vista mantiene los datos válidos a salvo y resalta de inmediato cualquier intento inválido.</p>
         </div>
       </section>
 
       <section class="dashboard">
-        <section class="panel panel-focus" aria-labelledby="received-title">
-          <div class="panel-header">
-            <div>
-              <h2 id="received-title">Datos recibidos del proyecto</h2>
-              <p>Actualizacion automatica cada 3 segundos.</p>
+        <section class="main-column">
+          <section class="panel panel-focus" aria-labelledby="received-title">
+            <div class="panel-header">
+              <div>
+                <h2 id="received-title">Datos recibidos del proyecto</h2>
+                <p>Estado del último intento y payload visible solo cuando la autenticación fue válida.</p>
+              </div>
+              <span class="live-pill">Tiempo real</span>
             </div>
-            <span class="live-pill">Activo</span>
-          </div>
 
-          <div class="stats-grid">
-            <article class="stat-card">
-              <span class="stat-label">Estado HTTP</span>
-              <strong class="stat-value" id="receivedStatus">-</strong>
-            </article>
-            <article class="stat-card">
-              <span class="stat-label">Fecha y hora</span>
-              <strong class="stat-value stat-copy" id="receivedDate">Sin registros</strong>
-            </article>
-            <article class="stat-card">
-              <span class="stat-label">Mensaje</span>
-              <strong class="stat-value stat-copy" id="receivedMessage">Esperando datos</strong>
-            </article>
-          </div>
+            <div class="attempt-alert hidden" id="attemptAlert">
+              <strong id="attemptAlertTitle">Sin alertas</strong>
+              <span id="attemptAlertMessage"></span>
+            </div>
 
-          <div class="field field-tight">
-            <label for="receivedPayload">Datos recibidos</label>
-            <pre class="code-block payload-block" id="receivedPayload">Aun no se ha recibido ninguna insercion.</pre>
-          </div>
+            <div class="stats-grid">
+              <article class="stat-card">
+                <span class="stat-label">Estado HTTP</span>
+                <strong class="stat-value" id="receivedStatus">-</strong>
+              </article>
+              <article class="stat-card">
+                <span class="stat-label">Fecha y hora</span>
+                <strong class="stat-value stat-copy" id="receivedDate">Sin registros</strong>
+              </article>
+              <article class="stat-card">
+                <span class="stat-label">Mensaje</span>
+                <strong class="stat-value stat-copy" id="receivedMessage">Esperando datos</strong>
+              </article>
+            </div>
+
+            <div class="field field-tight">
+              <label for="receivedPayload">Datos recibidos</label>
+              <pre class="code-block payload-block" id="receivedPayload">Aún no se ha recibido ninguna inserción.</pre>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="kpi-title">
+            <div class="panel-header">
+              <div>
+                <h2 id="kpi-title">Métricas y seguridad</h2>
+                <p>Indicadores rápidos para monitorear tráfico, errores y nivel de protección.</p>
+              </div>
+            </div>
+
+            <div class="kpi-grid">
+              <article class="kpi-card">
+                <span class="kpi-label">Requests exitosos</span>
+                <strong class="kpi-value" id="kpiSuccess">0</strong>
+              </article>
+              <article class="kpi-card">
+                <span class="kpi-label">Requests fallidos</span>
+                <strong class="kpi-value" id="kpiFailed">0</strong>
+              </article>
+              <article class="kpi-card">
+                <span class="kpi-label">Último acceso</span>
+                <strong class="kpi-value kpi-copy" id="kpiLastAccess">Sin registros</strong>
+              </article>
+              <article class="kpi-card">
+                <span class="kpi-label">Último error</span>
+                <strong class="kpi-value kpi-copy" id="kpiLastError">Sin errores</strong>
+              </article>
+            </div>
+
+            <div class="security-card">
+              <div class="security-row">
+                <span>Webhook protegido</span>
+                <span class="badge badge-success" id="securityProtected">Sí</span>
+              </div>
+              <div class="security-row">
+                <span>Autenticación activa</span>
+                <span class="badge badge-success" id="securityAuth">Activa</span>
+              </div>
+              <div class="security-row">
+                <span>Último intento fallido</span>
+                <span class="security-copy" id="securityLastFailed">Sin fallos</span>
+              </div>
+              <div class="security-row">
+                <span>Nivel de seguridad</span>
+                <span class="badge badge-neutral" id="securityLevel">Medio</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="history-title">
+            <div class="panel-header">
+              <div>
+                <h2 id="history-title">Historial de requests</h2>
+                <p>Últimos intentos recibidos con resultado, autenticación e identificador.</p>
+              </div>
+            </div>
+
+            <div class="table-shell">
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>HTTP</th>
+                    <th>Auth</th>
+                    <th>Resultado</th>
+                    <th>Identificador</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody id="historyBody">
+                  <tr>
+                    <td colspan="6" class="empty-row">Aún no hay requests.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="logs-title">
+            <div class="panel-header">
+              <div>
+                <h2 id="logs-title">Logs visuales</h2>
+                <p>Mensajes recientes del webhook con colores para éxito, warning y error.</p>
+              </div>
+            </div>
+
+            <div class="logs-list" id="logsList">
+              <div class="log-item log-neutral">Aún no hay eventos registrados.</div>
+            </div>
+          </section>
         </section>
 
         <aside class="sidebar">
@@ -77,8 +175,8 @@
           <section class="panel panel-compact" aria-labelledby="external-title">
             <div class="panel-header">
               <div>
-                <h2 id="external-title">URL del proyecto externo para verificar conexion</h2>
-                <p>Esta URL solo se usa para comprobar si el otro sistema responde.</p>
+                <h2 id="external-title">URL del proyecto externo para verificar conexión</h2>
+                <p>Solo se usa para comprobar si el otro sitio responde.</p>
               </div>
             </div>
 
@@ -90,16 +188,16 @@
 
             <div class="button-row">
               <button class="primary-button" id="saveExternalUrl" type="button">Guardar URL externa</button>
-              <button class="secondary-button" id="verifyConnection" type="button">Verificar conexion</button>
+              <button class="secondary-button" id="verifyConnection" type="button">Verificar conexión</button>
             </div>
 
             <div class="connection-card">
               <div class="connection-head">
-                <strong>Verificacion</strong>
+                <strong>Disponibilidad</strong>
                 <span class="connection-pill neutral" id="connectionIndicator">Sin verificar</span>
               </div>
               <div class="connection-meta">
-                <span id="connectionMessage">Aun no se ha comprobado la disponibilidad del sitio.</span>
+                <span id="connectionMessage">Aún no se ha comprobado la disponibilidad del sitio.</span>
                 <span id="connectionHttp">HTTP: -</span>
                 <span id="connectionTime">Tiempo: -</span>
               </div>
@@ -109,8 +207,8 @@
           <section class="panel panel-compact" aria-labelledby="security-title">
             <div class="panel-header">
               <div>
-                <h2 id="security-title">Autenticacion</h2>
-                <p>Elige bearer o hmac y copia la credencial.</p>
+                <h2 id="security-title">Autenticación</h2>
+                <p>Bearer o HMAC con regeneración y copia rápida.</p>
               </div>
             </div>
 
@@ -150,6 +248,47 @@
                 <button class="primary-button" id="generateSecret" type="button">Regenerar secreto</button>
                 <button class="secondary-button" id="copySecret" type="button">Copiar secreto</button>
               </div>
+            </div>
+          </section>
+
+          <section class="panel panel-compact" aria-labelledby="examples-title">
+            <div class="panel-header">
+              <div>
+                <h2 id="examples-title">Copiar ejemplo</h2>
+                <p>Atajos para compartir configuración o pruebas rápidas.</p>
+              </div>
+            </div>
+
+            <div class="button-grid">
+              <button class="secondary-button" id="copyBearerExample" type="button">Ejemplo Bearer</button>
+              <button class="secondary-button" id="copyCurlExample" type="button">Ejemplo curl</button>
+              <button class="secondary-button" id="copyJsonExample" type="button">Ejemplo JSON</button>
+            </div>
+          </section>
+
+          <section class="panel panel-compact" aria-labelledby="auth-test-title">
+            <div class="panel-header">
+              <div>
+                <h2 id="auth-test-title">Probar autenticación</h2>
+                <p>Envía una prueba controlada para validar credenciales.</p>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="authTestMode">Modo de prueba</label>
+              <select id="authTestMode">
+                <option value="valid">válido</option>
+                <option value="invalid">inválido</option>
+              </select>
+            </div>
+
+            <div class="button-row">
+              <button class="primary-button" id="runAuthTest" type="button">Probar autenticación</button>
+            </div>
+
+            <div class="test-result" id="authTestResult">
+              <span class="badge badge-neutral" id="authTestBadge">Sin ejecutar</span>
+              <span id="authTestMessage">Aún no se ha ejecutado ninguna prueba.</span>
             </div>
           </section>
 
