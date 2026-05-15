@@ -1,6 +1,7 @@
 const webhookPath = "/api/webhooks/interop";
 const configEndpoint = "/api/config";
 const lastWebhookEndpoint = "/api/webhooks/last";
+const clearWebhookEndpoint = "/api/webhooks/clear";
 const connectionCheckEndpoint = "/api/connection-check";
 const pollIntervalMs = 3000;
 
@@ -21,6 +22,7 @@ const elements = {
   receivedDate: document.querySelector("#receivedDate"),
   receivedMessage: document.querySelector("#receivedMessage"),
   receivedPayload: document.querySelector("#receivedPayload"),
+  clearStatus: document.querySelector("#clearStatus"),
   errors: {
     webhookUrl: document.querySelector("#webhookUrlError"),
     externalProjectUrl: document.querySelector("#externalProjectUrlError"),
@@ -34,6 +36,7 @@ const buttons = {
   copyWebhookUrl: document.querySelector("#copyWebhookUrl"),
   saveExternalUrl: document.querySelector("#saveExternalUrl"),
   verifyConnection: document.querySelector("#verifyConnection"),
+  clearWebhookData: document.querySelector("#clearWebhookData"),
   generateToken: document.querySelector("#generateToken"),
   copyToken: document.querySelector("#copyToken"),
   toggleToken: document.querySelector("#toggleToken"),
@@ -178,9 +181,23 @@ function renderLastEvent(data) {
   elements.receivedStatus.textContent = data?.status ?? "-";
   elements.receivedDate.textContent = formatTimestamp(data?.received_at);
   elements.receivedMessage.textContent = data?.message || "Esperando datos";
-  elements.receivedPayload.textContent = data?.payload
-    ? JSON.stringify(data.payload, null, 2)
-    : "Aun no se ha recibido ninguna insercion.";
+  elements.receivedPayload.textContent = data?.payload ? JSON.stringify(data.payload, null, 2) : "";
+}
+
+function resetWebhookView(message = "Esperando datos") {
+  elements.receivedStatus.textContent = "-";
+  elements.receivedDate.textContent = "Sin registros";
+  elements.receivedMessage.textContent = message;
+  elements.receivedPayload.textContent = "";
+}
+
+function clearBrowserStorage() {
+  try {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  } catch {
+    // Some browsers block storage access; server-side data has already been cleared.
+  }
 }
 
 function setConnectionState(state, message, status = "-", time = "-") {
@@ -199,6 +216,33 @@ async function fetchLastEvent() {
     renderLastEvent(await response.json());
   } catch {
     elements.receivedMessage.textContent = "No se pudo consultar la ultima insercion.";
+  }
+}
+
+async function clearWebhookData() {
+  buttons.clearWebhookData.disabled = true;
+  elements.clearStatus.textContent = "";
+
+  try {
+    const response = await fetch(clearWebhookEndpoint, {
+      method: "POST",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      elements.clearStatus.textContent = data.message || "No se pudieron limpiar los datos.";
+      return;
+    }
+
+    clearBrowserStorage();
+    resetWebhookView("Esperando datos");
+    elements.clearStatus.textContent = data.message || "Datos limpiados correctamente";
+  } catch {
+    elements.clearStatus.textContent = "No fue posible limpiar los datos.";
+  } finally {
+    buttons.clearWebhookData.disabled = false;
   }
 }
 
@@ -291,6 +335,10 @@ buttons.saveExternalUrl.addEventListener("click", async () => {
 
 buttons.verifyConnection.addEventListener("click", async () => {
   await verifyConnection();
+});
+
+buttons.clearWebhookData.addEventListener("click", async () => {
+  await clearWebhookData();
 });
 
 buttons.generateToken.addEventListener("click", async () => {

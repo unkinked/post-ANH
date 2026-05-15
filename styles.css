@@ -189,6 +189,14 @@ select:focus {
   margin-bottom: 12px;
 }
 
+.received-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 .connection-meta {
   display: grid;
   gap: 6px;
@@ -384,6 +392,10 @@ button:hover {
 
   .panel-header {
     flex-direction: column;
+  }
+
+  .received-actions {
+    justify-content: flex-start;
   }
 }
 

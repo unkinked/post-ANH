@@ -29,7 +29,10 @@
               <h2 id="received-title">Datos recibidos del proyecto</h2>
               <p>Actualizacion automatica cada 3 segundos.</p>
             </div>
-            <span class="live-pill">Activo</span>
+            <div class="received-actions">
+              <span class="live-pill">Activo</span>
+              <button class="secondary-button" id="clearWebhookData" type="button">Limpiar datos</button>
+            </div>
           </div>
 
           <div class="stats-grid">
@@ -50,6 +53,7 @@
           <div class="field field-tight">
             <label for="receivedPayload">Datos recibidos</label>
             <pre class="code-block payload-block" id="receivedPayload">Aun no se ha recibido ninguna insercion.</pre>
+            <p class="status-banner" id="clearStatus" role="status"></p>
           </div>
         </section>
 

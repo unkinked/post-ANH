@@ -8,7 +8,7 @@ const webhookPath = "/api/webhooks/interop";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Webhook-Signature",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
   "Cache-Control": "no-store",
 };
 
@@ -108,6 +108,7 @@ async function handleConfig(req: Request) {
 }
 
 async function handleIncomingWebhook(req: Request) {
+  if (req.method === "DELETE") return handleClearWebhookData(req);
   if (req.method !== "POST") return json({ message: "Metodo no permitido." }, { status: 405 });
 
   try {
@@ -136,8 +137,8 @@ async function handleLastWebhook() {
   const [event] = await db.select().from(webhookEvents).orderBy(desc(webhookEvents.receivedAt)).limit(1);
   if (!event) {
     return json({
-      status: 200,
-      message: "Esperando la primera insercion.",
+      status: "-",
+      message: "Esperando datos",
       received_at: null,
       payload: null,
     });
@@ -148,6 +149,21 @@ async function handleLastWebhook() {
     message: event.message,
     received_at: event.receivedAt,
     payload: event.payload,
+  });
+}
+
+async function handleClearWebhookData(req: Request) {
+  if (req.method !== "POST" && req.method !== "DELETE") {
+    return json({ message: "Metodo no permitido." }, { status: 405 });
+  }
+
+  await db.delete(webhookEvents);
+
+  return json({
+    status: "-",
+    message: "Datos limpiados correctamente",
+    received_at: null,
+    payload: null,
   });
 }
 
@@ -181,11 +197,12 @@ export default async (req: Request) => {
   if (pathname === "/api/config") return handleConfig(req);
   if (pathname === webhookPath) return handleIncomingWebhook(req);
   if (pathname === "/api/webhooks/last") return handleLastWebhook();
+  if (pathname === "/api/webhooks/clear") return handleClearWebhookData(req);
   if (pathname === "/api/connection-check") return handleConnectionCheck(req);
 
   return json({ message: "No encontrado." }, { status: 404 });
 };
 
 export const config: Config = {
-  path: ["/api/config", "/api/webhooks/interop", "/api/webhooks/last", "/api/connection-check"],
+  path: ["/api/config", "/api/webhooks/interop", "/api/webhooks/last", "/api/webhooks/clear", "/api/connection-check"],
 };
