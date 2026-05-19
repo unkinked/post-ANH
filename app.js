@@ -135,7 +135,20 @@ function pushToast(type, message) {
 
 async function copyText(value, message) {
   try {
-    await navigator.clipboard.writeText(value);
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(value);
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = value;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "absolute";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      textarea.remove();
+    }
+
     elements.saveStatus.textContent = message;
     pushToast("success", message);
   } catch {
@@ -458,8 +471,12 @@ async function loadInitialState() {
     elements.authType.value = "bearer";
   }
 
-  if (!elements.token.value) {
+  if (elements.authType.value === "bearer" && !elements.token.value.trim()) {
     elements.token.value = generateBearerToken();
+  }
+
+  if (elements.authType.value === "hmac" && !elements.secret.value.trim()) {
+    elements.secret.value = generateHmacSecret();
   }
 
   setAuthView();

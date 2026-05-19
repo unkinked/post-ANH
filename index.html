@@ -24,9 +24,10 @@
         </div>
       </section>
 
-      <div class=\"mx-auto max-w-7xl p-4 space-y-4\"><section class=\"dashboard grid grid-cols-1 lg:grid-cols-2 gap-4\">
-        <section class="main-column">
-          <section class="panel panel-focus" aria-labelledby="received-title">
+      <div class="mx-auto max-w-7xl p-4 space-y-4">
+        <section class="dashboard grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <section class="main-column">
+            <section class="panel panel-focus" aria-labelledby="received-title">
             <div class="panel-header">
               <div>
                 <h2 id="received-title">Datos recibidos del proyecto</h2>
@@ -172,23 +173,23 @@
             </div>
           </section>
 
-          <!-- External project verification removed -->
+          <section class="panel panel-compact" aria-labelledby="external-title">
             <div class="panel-header">
               <div>
-                <!-- URL externo verificación removida -->
-                <!-- eliminado -->
+                <h2 id="external-title">Proyecto externo</h2>
+                <p>URL del proyecto externo y verificación de disponibilidad.</p>
               </div>
             </div>
 
             <div class="field">
               <label for="externalProjectUrl">URL del proyecto externo</label>
-              <input id="externalProjectUrl" type="url" autocomplete="off" hidden />
+              <input id="externalProjectUrl" type="url" autocomplete="off" />
               <p class="error-message" id="externalProjectUrlError"></p>
             </div>
 
             <div class="button-row">
               <button class="primary-button" id="saveExternalUrl" type="button">Guardar URL externa</button>
-              <!-- Verificar conexión eliminado -->
+              <button class="secondary-button" id="verifyConnection" type="button">Verificar conexión</button>
             </div>
 
             <div class="connection-card">
@@ -266,7 +267,7 @@
             </div>
           </section>
 
-          <!-- Prueba de autenticación deshabilitada -->
+          <section class="panel panel-compact" aria-labelledby="auth-test-title">
             <div class="panel-header">
               <div>
                 <h2 id="auth-test-title">Probar autenticación</h2>
