@@ -40,9 +40,10 @@ select {
 }
 
 .page-shell {
-  width: min(1280px, calc(100% - 32px));
+  max-width: 1100px;
+  width: 100%;
   margin: 0 auto;
-  padding: 40px 0 48px;
+  padding: 24px 0 48px;
 }
 
 .toast-stack {
@@ -119,8 +120,8 @@ h2 {
 
 .dashboard {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.8fr);
-  gap: 22px;
+  grid-template-columns: 1fr 420px;
+  gap: 12px;
   align-items: start;
 }
 
@@ -205,6 +206,7 @@ select:focus {
 .button-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
 }
 
 button {
@@ -254,11 +256,11 @@ button:hover {
 }
 
 .stat-card,
-.kpi-card {
+    .kpi-card {
   border: 1px solid rgba(214, 224, 238, 0.9);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.84);
-  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 14px;
 }
 
 .stat-label,
@@ -431,8 +433,8 @@ button:hover {
 
 .history-table th {
   color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 800;
+  font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
@@ -522,7 +524,9 @@ button:hover {
 }
 
 @media (max-width: 1080px) {
-  .dashboard,
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
   .kpi-grid,
   .stats-grid,
   .button-grid {
