@@ -24,7 +24,7 @@
 
 body {
   margin: 0;
-  min-height: 100vh;
+  min-height: auto;
   background:
     radial-gradient(circle at top left, rgba(20, 99, 255, 0.16), transparent 26rem),
     radial-gradient(circle at bottom right, rgba(15, 118, 110, 0.14), transparent 24rem),
