@@ -362,18 +362,23 @@ function authErrorResponse(authType, reason) {
 
 function validateWebhookAuth(request, rawBody) {
   if (state.config.webhook_auth_type === "bearer") {
-    const header = String(request.headers.authorization || "");
+    const header = String(request.headers.authorization || "").trim();
     if (!header) return { ok: false, ...authErrorResponse("bearer", "missing") };
 
-    const expected = `Bearer ${state.config.webhook_auth_token}`;
-    if (!state.config.webhook_auth_token || header !== expected) {
+    const [scheme, token] = header.split(/\s+/);
+    if (!scheme || !token || scheme.toLowerCase() !== "bearer") {
+      return { ok: false, ...authErrorResponse("bearer", "invalid") };
+    }
+
+    const expectedToken = state.config.webhook_auth_token || "";
+    if (!expectedToken || token !== expectedToken) {
       return { ok: false, ...authErrorResponse("bearer", "invalid") };
     }
 
     return { ok: true };
   }
 
-  const signature = String(request.headers["x-webhook-signature"] || "");
+  const signature = String(request.headers["x-webhook-signature"] || "").trim();
   if (!signature) return { ok: false, ...authErrorResponse("hmac", "missing") };
 
   const expected = createSignature(state.config.webhook_secret || "", rawBody);
@@ -499,8 +504,16 @@ console.log(
     const { parsed, raw } = await readJsonBody(request);
     const payload = safeParsePayload(parsed);
 
+    console.log("WEBHOOK RECEIVED", {
+      origin: getOrigin(request),
+      identifier,
+      authType: state.config.webhook_auth_type,
+      payload,
+    });
+
     const authResult = validateWebhookAuth(request, raw);
     if (!authResult.ok) {
+      pushLog("error", "Autenticación webhook inválida.", { status: authResult.status, identifier, authType });
       registerAttempt({
         status: authResult.status,
         message: authResult.body.error,
@@ -539,6 +552,8 @@ console.log(
       payload,
       identifier,
     };
+
+    console.log("WEBHOOK PROCESSED", { status, message, identifier, payload });
 
     registerAttempt({
       status,
