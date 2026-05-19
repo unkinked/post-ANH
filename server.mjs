@@ -781,8 +781,11 @@ const server = createServer(async (request, response) => {
 
 refreshSecurityState();
 
-server.listen(port, "127.0.0.1", () => {
-  const title = readFileSync(join(root, "index.html"), "utf8").match(/<title>([^<]+)<\/title>/)?.[1] || "Webhook app";
-  console.log(`${title} running at http://127.0.0.1:${port}/`);
-  console.log(`Webhook receiver: http://127.0.0.1:${port}${webhookPath}`);
+server.listen(port, "0.0.0.0", () => {
+  const title =
+    readFileSync(join(root, "index.html"), "utf8").match(/<title>([^<]+)<\/title>/)?.[1] ||
+    "Webhook app";
+
+  console.log(`${title} running on port ${port}`);
+  console.log(`Webhook receiver: /api/webhooks/interoperability`);
 });
