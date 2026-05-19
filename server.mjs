@@ -453,7 +453,9 @@ async function handleIncomingWebhook(request, response) {
 
   const identifier = getIdentifier(request);
   const authType = state.config.webhook_auth_type;
-  const isDryRun = String(request.headers["x-webhook-test"] || "") === "true";
+  const isDryRun = String(request.headers["x-webhook-test"] || "") === "true";\n  console.log("DEBUG: received webhook from", getOrigin(request), "identifier", identifier, "auth_type", state.config.webhook_auth_type);
+
+  pushLog("neutral", `Incoming webhook: id=${identifier}, origin=${getOrigin(request)}, auth=${state.config.webhook_auth_type}, dryRun=${isDryRun}`);
 
   if (isRateLimited(identifier)) {
     registerAttempt({
